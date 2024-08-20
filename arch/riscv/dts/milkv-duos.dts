@@ -1,0 +1,14 @@
+#include <milkv-duo.dts>
+
+/ {
+	model = "Milk-V Duo S";
+
+        memory@80000000 {
+                device_type = "memory";
+		reg = <0x80000000 0x1FE00000>;
+        };
+};
+
+&sdhci0{
+	compatible = "cvitek,cv181x-sd";
+};
