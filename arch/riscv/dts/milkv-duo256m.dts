@@ -10,5 +10,6 @@
 };
 
 &sdhci0{
-	compatible = "cvitek,cv181x-sd";
+	compatible = "sophgo,cv1800b-dwcmshc";
+	no-1-8-v;
 };
