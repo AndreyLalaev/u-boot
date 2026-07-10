@@ -32,6 +32,9 @@ config TARGET_MICROCHIP_GENERIC
 config TARGET_MILKV_DUO
 	bool "Support Milk-v Duo Board"
 
+config TARGET_MILKV_DUO_256M
+	bool "Support Milk-v Duo Board"
+
 config TARGET_OPENPITON_RISCV64
 	bool "Support RISC-V cores on OpenPiton SoC"
 

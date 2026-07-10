@@ -1,4 +1,4 @@
-#include <milkv-duo.dts>
+#include <cv1800b-milkv-duo.dts>
 
 / {
 	model = "Milk-V Duo 256M";
