@@ -1,0 +1,5 @@
+Milk-V Duo S
+M:	Andrei Lalaev <andrey.lalaev@gmail.com>
+S:	Maintained
+F:	board/sophgo/milkv_duo_s/
+F:	configs/milkv_duo_s_defconfig
