@@ -3,13 +3,14 @@
  * Copyright (c) 2024, Kongyang Liu <seashell11234455@gmail.com>
  */
 
+#include "linux/printk.h"
 #include <dm.h>
 #include <mmc.h>
 #include <sdhci.h>
 #include <linux/delay.h>
 
-#define CV18XX_SDHCI_MSHC_CTRL  0x200
-#define CV18XX_SDHCI_PHY_CONFIG 0x24c
+#define SDHCI_MSHC_CTRL      0x200
+#define SDHCI_PHY_CONFIG     0x24c
 #define SDHCI_PHY_TX_RX_DLY  0x240
 #define MMC_MAX_CLOCK        375000000
 #define TUNE_MAX_PHCODE      128
@@ -17,8 +18,8 @@
 #define PHY_TX_SRC_INVERT  BIT(8)
 #define PHY_RX_SRC_INVERT  BIT(24)
 
-#define CV18XX_LATANCY_1T BIT(1)
-#define CV18XX_PHY_TX_BPS BIT(0)
+#define PHY_LATANCY_1T BIT(1)
+#define PHY_TX_BPS BIT(0)
 
 struct cv1800b_sdhci_plat {
 	struct mmc_config cfg;
@@ -70,17 +71,25 @@ static int cv1800b_execute_tuning(struct mmc *mmc, u8 opcode)
 }
 #endif
 
-static int cv1800b_configure_phy(struct sdhci_host *host)
+static int cv1800b_set_ios_post(struct sdhci_host *host)
 {
+	struct mmc *mmc = host->mmc;
 	u32 val;
 
-	val = sdhci_readl(host, CV18XX_SDHCI_MSHC_CTRL);
-	val |= CV18XX_LATANCY_1T;
-	sdhci_writel(host, val, CV18XX_SDHCI_MSHC_CTRL);
+	printk("selected mode: %d; voltage = %d\n", mmc->selected_mode,
+	       mmc->signal_voltage);
 
-	val = sdhci_readl(host, CV18XX_SDHCI_PHY_CONFIG);
-	val |= CV18XX_PHY_TX_BPS;
-	sdhci_writel(host, val, CV18XX_SDHCI_PHY_CONFIG);
+	if (mmc->selected_mode != MMC_LEGACY && mmc->selected_mode != MMC_HS &&
+	    mmc->selected_mode != SD_HS)
+		return 0;
+
+	val = sdhci_readl(host, SDHCI_MSHC_CTRL);
+	val |= PHY_LATANCY_1T;
+	sdhci_writel(host, val, SDHCI_MSHC_CTRL);
+
+	val = sdhci_readl(host, SDHCI_PHY_CONFIG);
+	val |= PHY_TX_BPS;
+	sdhci_writel(host, val, SDHCI_PHY_CONFIG);
 
 	val = PHY_TX_SRC_INVERT | PHY_RX_SRC_INVERT;
 	sdhci_writel(host, val, SDHCI_PHY_TX_RX_DLY);
@@ -92,6 +101,7 @@ const struct sdhci_ops cv1800b_sdhci_sd_ops = {
 #if CONFIG_IS_ENABLED(MMC_SUPPORTS_TUNING)
 	.platform_execute_tuning = cv1800b_execute_tuning,
 #endif
+	.set_ios_post = cv1800b_set_ios_post,
 };
 
 static int cv1800b_sdhci_bind(struct udevice *dev)
@@ -129,11 +139,7 @@ static int cv1800b_sdhci_probe(struct udevice *dev)
 	if (ret)
 		return ret;
 
-	ret = sdhci_probe(dev);
-	if (ret)
-		return ret;
-
-	return cv1800b_configure_phy(host);
+	return sdhci_probe(dev);
 }
 
 static const struct udevice_id cv1800b_sdhci_match[] = {
