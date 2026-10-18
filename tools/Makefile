@@ -132,6 +132,7 @@ dumpimage-mkimage-objs := aisimage.o \
 			generated/lib/md5.o \
 			lpc32xximage.o \
 			mxsimage.o \
+			milkvimage.o \
 			omapimage.o \
 			os_support.o \
 			pblimage.o \

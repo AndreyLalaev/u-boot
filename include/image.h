@@ -204,6 +204,7 @@ enum image_type_t {
 	IH_TYPE_KERNEL_NOLOAD,
 	IH_TYPE_PBLIMAGE,		/* Freescale PBL Boot Image	*/
 	IH_TYPE_MXSIMAGE,		/* Freescale MXSBoot Image	*/
+	IH_TYPE_MILKVIMAGE,		/* Milk-V Duo Boot image	*/
 	IH_TYPE_GPIMAGE,		/* TI Keystone GPHeader Image	*/
 	IH_TYPE_ATMELIMAGE,		/* ATMEL ROM bootable Image	*/
 	IH_TYPE_SOCFPGAIMAGE,		/* Altera SOCFPGA CV/AV Preloader */
